@@ -2,13 +2,20 @@
 from __future__ import print_function
 
 ### Convert the AMF format (xml based) into the point/polygon form for OpenSCAD
+### usual use case is:
+# 1. create object in openSCAD
+# 2. want to have a polyhedron version
+# 3. so export as AMF and convert to polyhedrons using this program
+# 4. Load it back in by cutting and pasting the three lines per mesh into your openSCAD file.
+
 
 import sys
 import os.path
 
 
 # manual file defined
-filename = "test.amf"
+filename = "Test.amf"
+invert_faces = True # if the resulting object is inside out (F12 shows pink), then swap this.
 
 #=================================
 def extract_block(lines, blockstart, blockend):
@@ -75,6 +82,7 @@ def create_polygons(verts, tris, index):
 	points = points[:-1]+"];"
 	faces = "%s=[" %(face_label)
 	for a,b,c in tris:
+		if invert_faces: a,c = c,a # swap order
 		faces += "["+a+","+b+","+c+"],"
 	faces = faces[:-1]+"];"
 	polyhedron = "polyhedron(" + point_label + "," + face_label + ");"
